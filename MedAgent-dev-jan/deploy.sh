@@ -46,18 +46,29 @@ APP_DIR="/opt/medagent"
 sudo mkdir -p $APP_DIR
 sudo chown $USER:$USER $APP_DIR
 
-# Copy application files (assuming script is run from project root)
-echo "Step 6: Copying application files..."
-cp -r . $APP_DIR/
+# Clone repository
+echo "Step 6: Cloning repository from GitHub..."
 cd $APP_DIR
+GIT_REPO="https://github.com/aisvamalar/sample-deploy.git"
+if [ -d "sample-deploy" ]; then
+    echo "Repository already exists. Pulling latest changes..."
+    cd sample-deploy
+    git pull
+else
+    git clone $GIT_REPO
+    cd sample-deploy
+fi
+
+# Navigate to project directory
+cd MedAgent-dev-jan
 
 # Create .env file if it doesn't exist
 if [ ! -f .env ]; then
     echo "Step 7: Creating .env file from template..."
     cp env.example .env
     echo ""
-    echo "⚠️  IMPORTANT: Please edit $APP_DIR/.env and add your GROQ_API_KEY"
-    echo "   Run: sudo nano $APP_DIR/.env"
+    echo "⚠️  IMPORTANT: Please edit $APP_DIR/sample-deploy/MedAgent-dev-jan/.env and add your GROQ_API_KEY"
+    echo "   Run: nano $APP_DIR/sample-deploy/MedAgent-dev-jan/.env"
     echo ""
     read -p "Press Enter after you've configured .env file..."
 fi
@@ -87,10 +98,10 @@ echo "  - Frontend UI: http://$(curl -s ifconfig.me):8501"
 echo "  - Nginx Proxy: http://$(curl -s ifconfig.me)"
 echo ""
 echo "Useful commands:"
-echo "  - View logs: cd $APP_DIR && docker-compose logs -f"
-echo "  - Stop services: cd $APP_DIR && docker-compose down"
-echo "  - Restart services: cd $APP_DIR && docker-compose restart"
-echo "  - Update application: cd $APP_DIR && git pull && docker-compose up -d --build"
+echo "  - View logs: cd $APP_DIR/sample-deploy/MedAgent-dev-jan && docker-compose logs -f"
+echo "  - Stop services: cd $APP_DIR/sample-deploy/MedAgent-dev-jan && docker-compose down"
+echo "  - Restart services: cd $APP_DIR/sample-deploy/MedAgent-dev-jan && docker-compose restart"
+echo "  - Update application: cd $APP_DIR/sample-deploy && git pull && cd MedAgent-dev-jan && docker-compose up -d --build"
 echo ""
 echo "Note: You may need to log out and back in for Docker group changes to take effect."
 echo ""

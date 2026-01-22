@@ -40,10 +40,21 @@ APP_DIR="/opt/medagent"
 sudo mkdir -p $APP_DIR
 sudo chown $USER:$USER $APP_DIR
 
-# Copy application files
-echo "Step 5: Copying application files..."
-cp -r . $APP_DIR/
+# Clone repository
+echo "Step 5: Cloning repository from GitHub..."
 cd $APP_DIR
+GIT_REPO="https://github.com/aisvamalar/sample-deploy.git"
+if [ -d "sample-deploy" ]; then
+    echo "Repository already exists. Pulling latest changes..."
+    cd sample-deploy
+    git pull
+else
+    git clone $GIT_REPO
+    cd sample-deploy
+fi
+
+# Navigate to project directory
+cd MedAgent-dev-jan
 
 # Create virtual environment
 echo "Step 6: Creating Python virtual environment..."
@@ -60,14 +71,15 @@ if [ ! -f .env ]; then
     echo "Step 8: Creating .env file from template..."
     cp env.example .env
     echo ""
-    echo "⚠️  IMPORTANT: Please edit $APP_DIR/.env and add your GROQ_API_KEY"
-    echo "   Run: sudo nano $APP_DIR/.env"
+    echo "⚠️  IMPORTANT: Please edit $APP_DIR/sample-deploy/MedAgent-dev-jan/.env and add your GROQ_API_KEY"
+    echo "   Run: nano $APP_DIR/sample-deploy/MedAgent-dev-jan/.env"
     echo ""
     read -p "Press Enter after you've configured .env file..."
 fi
 
 # Install systemd services
 echo "Step 9: Installing systemd services..."
+# Copy service files (paths are already correct in the files)
 sudo cp systemd/medagent-backend.service /etc/systemd/system/
 sudo cp systemd/medagent-frontend.service /etc/systemd/system/
 sudo systemctl daemon-reload

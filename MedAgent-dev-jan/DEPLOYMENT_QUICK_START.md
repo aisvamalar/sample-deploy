@@ -13,29 +13,32 @@
 ssh -i "your-key.pem" ubuntu@<ec2-ip>
 ```
 
-### 2. Transfer Project Files
-**Option A: Using SCP (from your local machine)**
-```bash
-scp -i "your-key.pem" -r MedAgent-dev-jan ubuntu@<ec2-ip>:~/
-```
+### 2. Clone Repository and Run Deployment
+The deployment script will automatically clone from GitHub. Run:
 
-**Option B: Using Git (on EC2)**
 ```bash
-git clone <your-repo-url>
-cd MedAgent-dev-jan
-```
-
-### 3. Run Deployment Script
-```bash
-cd ~/MedAgent-dev-jan
+# Download deployment script
+curl -o deploy.sh https://raw.githubusercontent.com/aisvamalar/sample-deploy/main/MedAgent-dev-jan/deploy.sh
 chmod +x deploy.sh
 ./deploy.sh
 ```
 
-### 4. Configure API Key
+**OR** clone manually first:
+
+```bash
+cd /opt
+sudo mkdir -p medagent && sudo chown $USER:$USER medagent
+cd medagent
+git clone https://github.com/aisvamalar/sample-deploy.git
+cd sample-deploy/MedAgent-dev-jan
+chmod +x deploy.sh
+./deploy.sh
+```
+
+### 3. Configure API Key
 When prompted, edit the `.env` file:
 ```bash
-nano .env
+nano /opt/medagent/sample-deploy/MedAgent-dev-jan/.env
 ```
 Add: `GROQ_API_KEY=your_actual_key_here`
 
@@ -48,7 +51,7 @@ Add: `GROQ_API_KEY=your_actual_key_here`
 
 ### View Logs
 ```bash
-cd /opt/medagent
+cd /opt/medagent/sample-deploy/MedAgent-dev-jan
 docker-compose logs -f
 ```
 
@@ -64,7 +67,9 @@ docker-compose down
 
 ### Update Application
 ```bash
+cd /opt/medagent/sample-deploy
 git pull
+cd MedAgent-dev-jan
 docker-compose up -d --build
 ```
 

@@ -77,29 +77,41 @@ You have two deployment options:
 
 This is the easiest and most portable method.
 
-#### 3.1 Transfer Files to EC2
+#### 3.1 Clone Repository on EC2
 
-**From your local machine**, use SCP to transfer the project:
+The deployment script will automatically clone the repository from GitHub. Simply run the deployment script:
 
 ```bash
-scp -i "path/to/your-key.pem" -r MedAgent-dev-jan ubuntu@<your-ec2-public-ip>:~/
+# Download and run the deployment script
+curl -o deploy.sh https://raw.githubusercontent.com/aisvamalar/sample-deploy/main/MedAgent-dev-jan/deploy.sh
+chmod +x deploy.sh
+./deploy.sh
 ```
 
-Or use Git (if your code is in a repository):
+**OR** if you want to clone manually first:
+
 ```bash
 # On EC2 instance
-cd ~
-git clone <your-repository-url>
-cd MedAgent-dev-jan
+cd /opt
+sudo mkdir -p medagent
+sudo chown $USER:$USER medagent
+cd medagent
+git clone https://github.com/aisvamalar/sample-deploy.git
+cd sample-deploy/MedAgent-dev-jan
+chmod +x deploy.sh
+./deploy.sh
 ```
 
 #### 3.2 Run Deployment Script
 
-```bash
-cd ~/MedAgent-dev-jan
-chmod +x deploy.sh
-./deploy.sh
-```
+The script will automatically:
+- Clone the repository from GitHub: `https://github.com/aisvamalar/sample-deploy.git`
+- Navigate to the `MedAgent-dev-jan` directory
+- Install all dependencies
+- Set up Docker
+- Configure firewall
+- Build and start containers
+- Set up Nginx reverse proxy
 
 The script will:
 - Install all dependencies
@@ -112,7 +124,7 @@ The script will:
 
 When prompted, edit the `.env` file:
 ```bash
-nano .env
+nano /opt/medagent/sample-deploy/MedAgent-dev-jan/.env
 ```
 
 Add your Groq API key:
@@ -138,21 +150,36 @@ docker-compose logs -f
 
 If you prefer not to use Docker:
 
-#### 3.1 Transfer Files to EC2
+#### 3.1 Clone Repository on EC2
 
-Same as Option A, Step 3.1
-
-#### 3.2 Run Deployment Script
+The deployment script will automatically clone the repository. Run:
 
 ```bash
-cd ~/MedAgent-dev-jan
+# Download and run the deployment script
+curl -o deploy-without-docker.sh https://raw.githubusercontent.com/aisvamalar/sample-deploy/main/MedAgent-dev-jan/deploy-without-docker.sh
 chmod +x deploy-without-docker.sh
 ./deploy-without-docker.sh
 ```
 
-#### 3.3 Configure Environment Variables
+**OR** clone manually:
 
-Same as Option A, Step 3.3
+```bash
+cd /opt
+sudo mkdir -p medagent
+sudo chown $USER:$USER medagent
+cd medagent
+git clone https://github.com/aisvamalar/sample-deploy.git
+cd sample-deploy/MedAgent-dev-jan
+chmod +x deploy-without-docker.sh
+./deploy-without-docker.sh
+```
+
+#### 3.2 Configure Environment Variables
+
+When prompted, edit the `.env` file:
+```bash
+nano /opt/medagent/sample-deploy/MedAgent-dev-jan/.env
+```
 
 #### 3.4 Verify Deployment
 
@@ -226,7 +253,7 @@ Certbot will automatically configure SSL and renew certificates.
 
 ```bash
 # View logs
-cd /opt/medagent
+cd /opt/medagent/sample-deploy/MedAgent-dev-jan
 docker-compose logs -f
 
 # Restart services
@@ -236,7 +263,9 @@ docker-compose restart
 docker-compose down
 
 # Update application
+cd /opt/medagent/sample-deploy
 git pull
+cd MedAgent-dev-jan
 docker-compose up -d --build
 
 # View resource usage
@@ -258,11 +287,13 @@ sudo systemctl restart medagent-frontend
 sudo systemctl status medagent-backend medagent-frontend
 
 # Update application
-cd /opt/medagent
+cd /opt/medagent/sample-deploy
 git pull
+cd MedAgent-dev-jan
 source .venv/bin/activate
 pip install -r requirements.txt
 sudo systemctl restart medagent-backend medagent-frontend
+```
 ```
 
 ---
@@ -299,10 +330,10 @@ sudo journalctl -u medagent-backend --since "1 hour ago"
 Backup your `.env` file:
 ```bash
 # Docker
-cp /opt/medagent/.env /opt/medagent/.env.backup
+cp /opt/medagent/sample-deploy/MedAgent-dev-jan/.env /opt/medagent/sample-deploy/MedAgent-dev-jan/.env.backup
 
 # Systemd
-sudo cp /opt/medagent/.env /opt/medagent/.env.backup
+sudo cp /opt/medagent/sample-deploy/MedAgent-dev-jan/.env /opt/medagent/sample-deploy/MedAgent-dev-jan/.env.backup
 ```
 
 ### 7.5 Set Up CloudWatch Monitoring (Optional)
