@@ -1,0 +1,16 @@
+[Unit]
+Description=MedAgent Frontend Service
+After=network.target medagent-backend.service
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/medagent
+Environment="PATH=/opt/medagent/.venv/bin"
+Environment="BACKEND_URL=http://localhost:8000/api/ask"
+ExecStart=/opt/medagent/.venv/bin/streamlit run frontend/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

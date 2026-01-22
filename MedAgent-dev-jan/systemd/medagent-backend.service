@@ -1,0 +1,15 @@
+[Unit]
+Description=MedAgent Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/medagent
+Environment="PATH=/opt/medagent/.venv/bin"
+ExecStart=/opt/medagent/.venv/bin/uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
