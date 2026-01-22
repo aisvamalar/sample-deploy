@@ -92,12 +92,21 @@ sudo systemctl enable medagent-frontend
 sudo systemctl start medagent-backend
 sudo systemctl start medagent-frontend
 
-# Configure Nginx
-echo "Step 10: Configuring Nginx..."
-sudo cp nginx.conf /etc/nginx/nginx.conf
-sudo nginx -t
-sudo systemctl restart nginx
-sudo systemctl enable nginx
+# Configure Nginx (optional - skip if you don't need reverse proxy)
+echo "Step 10: Configuring Nginx (optional)..."
+if [ -f nginx-simple.conf ]; then
+    echo "Setting up Nginx reverse proxy..."
+    sudo cp nginx-simple.conf /etc/nginx/nginx.conf
+    sudo nginx -t
+    sudo systemctl restart nginx
+    sudo systemctl enable nginx
+    echo "Nginx configured. Access app at http://<your-ip>"
+else
+    echo "Nginx config not found, skipping nginx setup"
+    echo "You can access app directly at:"
+    echo "  - Frontend: http://<your-ip>:8501"
+    echo "  - Backend: http://<your-ip>:8000"
+fi
 
 # Wait for services to start
 echo "Step 11: Waiting for services to start..."
