@@ -17,13 +17,17 @@ sudo apt-get upgrade -y
 # Install required system packages
 echo "Step 2: Installing system dependencies..."
 sudo apt-get install -y \
-    python3.11 \
-    python3.11-venv \
+    python3 \
+    python3-venv \
     python3-pip \
     nginx \
     curl \
     git \
     ufw
+
+# Verify Python version
+PYTHON_VERSION=$(python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2)
+echo "Installed Python version: $(python3 --version)"
 
 # Configure firewall
 echo "Step 3: Configuring firewall..."
@@ -58,7 +62,7 @@ cd MedAgent-dev-jan
 
 # Create virtual environment
 echo "Step 6: Creating Python virtual environment..."
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 
 # Install dependencies
